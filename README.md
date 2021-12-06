@@ -3,7 +3,11 @@ Set GDM Background for Arch Linux
 
 Download the file using below command.
 
+````
 wget -qO - https://github.com/PRATAP-KUMAR/arch-gdm-set-background/archive/main.tar.gz | tar zx --strip-components=1 arch-gdm-set-background-main/arch-gdm-set-background
+````
+
+run `./arch-gdm-set-background --help`
 
 # arch-gdm-set-background script (for changing 'Arch Linux' GDM Background) HELP
 
@@ -18,9 +22,12 @@ you may choose colors from https://www.color-hex.com/
 
 Example Commands:
 
-1. sudo ./arch-gdm-set-background --image /home/user/backgrounds/image.jpg
-2. sudo ./arch-gdm-set-background --color \#aAbBcC
-3. sudo ./arch-gdm-set-background --gradient horizontal \#aAbBcC \#dDeEfF
-4. sudo ./arch-gdm-set-background --gradient vertical \#aAbBcC \#dDeEfF
-5. sudo ./arch-gdm-set-background --reset
-6. ./arch-gdm-set-background --help"
+1. `sudo ./arch-gdm-set-background --image /home/user/backgrounds/image.jpg`
+2. `sudo ./arch-gdm-set-background --color \#aAbBcC`
+3. `sudo ./arch-gdm-set-background --gradient horizontal \#aAbBcC \#dDeEfF`
+4. `sudo ./arch-gdm-set-background --gradient vertical \#aAbBcC \#dDeEfF`
+5. `sudo ./arch-gdm-set-background --reset`
+6. `./arch-gdm-set-background --help`
+
+If anytihng wrong after running this script.. reinstall the package "gnome-shell" with below command
+`sudo pacman -S gnome-shell`.
