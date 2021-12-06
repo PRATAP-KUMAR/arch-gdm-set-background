@@ -31,3 +31,6 @@ Example Commands:
 
 If anytihng wrong after running this script.. reinstall the package "gnome-shell" with below command
 `sudo pacman -S gnome-shell`.
+
+
+![GDM](https://user-images.githubusercontent.com/40719899/144896392-75e0c65f-c174-47df-936b-0b3eb79bc9c9.png)
