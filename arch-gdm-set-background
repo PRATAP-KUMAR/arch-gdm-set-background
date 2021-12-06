@@ -99,6 +99,16 @@ EOF
 }
 ###################################################
 
+###################################################
+SUCCESS_MSG() {
+echo "
+seems 'background change is successful'
+try CTRL+ALT+F1 to go the GDM Screen to see the change. If no change is seen, restart gdm with below command
+'sudo systemctl restart gdm'
+"
+}
+###################################################
+
 ############################################################################################
 case "$1" in ###############################################################################
 
@@ -181,20 +191,7 @@ cd theme
 glib-compile-resources custom-gdm-background.gresource.xml
 rm $source
 mv custom-gdm-background.gresource $source
-echo "
-seems 'background change is successful'
-Changes will be effective after a Reboot (CTRL+ALT+F1 may show the changes immediately)
-
-"
-exit 1
-
-else
-echo "
-absolute path to image is neither provided nor it is valid.
-see help with below command
-./arch-gdm-set-background --help
-
-"
+SUCCESS_MSG
 exit 1
 fi
 ;;
@@ -232,11 +229,7 @@ cd theme
 glib-compile-resources custom-gdm-background.gresource.xml
 rm $source
 mv custom-gdm-background.gresource $source
-echo "
-seems 'background change is successful'
-Changes will be effective after a Reboot (CTRL+ALT+F1 may show the changes immediately)
-
-"
+SUCCESS_MSG
 exit 1
 ;;
 ############################################################################################
@@ -282,11 +275,7 @@ CREATE_XML
 cd theme
 glib-compile-resources custom-gdm-background.gresource.xml
 mv custom-gdm-background.gresource $source
-echo "
-seems 'background change is successful'
-Changes will be effective after a Reboot (CTRL+ALT+F1 may show the changes immediately)
-
-"
+SUCCESS_MSG
 exit 1
 ;;
 ############################################################################################
