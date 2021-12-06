@@ -1,0 +1,309 @@
+#!/bin/bash
+
+NAME=$(cat /etc/os-release | grep ^NAME | cut -d = -f 2)
+ID=$(cat /etc/os-release | grep ^ID | cut -d = -f 2)
+
+if [ "$NAME" == '"Arch Linux"' ] && [ "$ID" == "arch" ]
+
+then
+source="/usr/share/gnome-shell/gnome-shell-theme.gresource"
+backup=$source.arch-gdm-set-background-script.BACKUP
+else
+echo "
+----------------------------------------
+Sorry, Script is only for Arch Linux
+Exiting...
+----------------------------------------"
+exit 1
+fi
+
+pkg=$(pacman -Qi glib2 > /dev/null && echo "yes" || echo "no")
+if [ "$pkg" == "no" ]
+then
+echo "
+-----------------------------------------------------------------------------------------------------
+Sorry, the package 'glib2' is not installed. Install the package and then run this Script.
+For now, Exiting...
+-----------------------------------------------------------------------------------------------------"
+exit 1
+fi
+
+###################################################
+HELP() {
+echo "
+arch-gdm-set-background script (for changing 'Arch Linux' GDM Background) HELP
+
+there are four options
+1. background with image
+2. background with color
+3. background with gradient horizontal ( requires two valid hex color inputs)
+4. background with gradient vertical ( requires two valid hex color inputs)
+
+tip: be ready with valid hex color code in place of below example like #aAbBcC or #dDeEfF. Change them to your preffered hex color codes.
+you may choose colors from https://www.color-hex.com/
+
+Example Commands:
+
+1. sudo ./arch-gdm-set-background --image /home/user/backgrounds/image.jpg
+2. sudo ./arch-gdm-set-background --color \#aAbBcC
+3. sudo ./arch-gdm-set-background --gradient horizontal \#aAbBcC \#dDeEfF
+4. sudo ./arch-gdm-set-background --gradient vertical \#aAbBcC \#dDeEfF
+5. sudo ./arch-gdm-set-background --reset
+6. ./arch-gdm-set-background --help"
+
+}
+###################################################
+
+###################################################
+ROUTINE_CHECK() {
+if [ "$UID" != "0" ]
+then
+echo "This Script must be run with sudo"
+exit 1
+fi
+
+# take backup of original resource file
+if ! [ -f $backup ]
+then
+cp $source $backup;
+fi
+
+cd /tmp
+if [ -d /tmp/theme/ ]
+then rm -r /tmp/theme
+fi
+}
+###################################################
+
+###################################################
+EXTRACT() {
+for r in $(gresource list $backup); do
+    t="${r/#\/org\/gnome\/shell\/}"
+    mkdir -p $(dirname $t)
+    gresource extract $backup $r >$t
+done
+}
+###################################################
+
+###################################################
+CREATE_XML() {
+extractedFiles=$(find "theme" -type f -printf "%P\n" | xargs -i echo "    <file>{}</file>")
+cat <<EOF >"theme/custom-gdm-background.gresource.xml"
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gnome/shell/theme">
+$extractedFiles
+  </gresource>
+</gresources>
+EOF
+}
+###################################################
+
+############################################################################################
+case "$1" in ###############################################################################
+
+############################################################################################
+'') ###############################################################################
+############################################################################################
+echo " use the options --image | --color | --gradient | --help | --reset"
+exit 1
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+############################################################################################
+--help) ###############################################################################
+############################################################################################
+HELP
+exit 1
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+############################################################################################
+--reset) ###################################################################################
+############################################################################################
+if ! [ -f $backup ]
+then
+echo "
+-----------------------------------------------------------------------------
+No need, Already Reset. (or unlikely background is not set using this Script.)
+-----------------------------------------------------------------------------"
+exit 1
+elif [ "$UID" != "0" ]
+then
+echo "This Script must be run with sudo"
+exit 1
+else
+rm $source
+mv $backup $source
+echo "
+				     		---------------
+						|Reset Success|
+						---------------
+				Changes will be effective after a Reboot"
+exit 1
+fi
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+############################################################################################
+--image) ###################################################################################
+############################################################################################
+if [ -z "$2" ]
+then
+echo "Image path is not provided"
+exit 1
+fi
+
+if
+file "$2" | grep -qE 'image|bitmap'
+then
+
+ROUTINE_CHECK
+EXTRACT
+cd theme
+cp "$2" ./gdm-background
+mv gnome-shell.css original.css
+echo '@import url("resource:///org/gnome/shell/theme/original.css");
+#lockDialogGroup {
+background: '$color' url("resource:///org/gnome/shell/theme/gdm-background");
+background-repeat: no-repeat;
+background-size: cover;
+background-position: center; }' > gnome-shell.css
+cd /tmp
+CREATE_XML
+cd theme
+glib-compile-resources custom-gdm-background.gresource.xml
+rm $source
+mv custom-gdm-background.gresource $source
+echo "
+seems 'background change is successful'
+Changes will be effective after a Reboot (CTRL+ALT+F1 may show the changes immediately)
+
+"
+exit 1
+
+else
+echo "
+absolute path to image is neither provided nor it is valid.
+see help with below command
+./arch-gdm-set-background --help
+
+"
+exit 1
+fi
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+############################################################################################
+--color) ###################################################################################
+############################################################################################
+if [ -z "$2" ]
+then
+echo "color is not provided"
+exit 1
+fi
+
+if ! [[ $2 =~ ^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$ ]]
+then
+echo "provided color is not a valid 'HEX Color Code'
+see help with below command
+./arch-gdm-set-background --help"
+exit 1
+fi
+
+ROUTINE_CHECK
+EXTRACT
+cd theme
+mv gnome-shell.css original.css
+echo '@import url("resource:///org/gnome/shell/theme/original.css");
+#lockDialogGroup {
+background-color: '$2'; }' > gnome-shell.css
+cd /tmp
+CREATE_XML
+cd theme
+glib-compile-resources custom-gdm-background.gresource.xml
+rm $source
+mv custom-gdm-background.gresource $source
+echo "
+seems 'background change is successful'
+Changes will be effective after a Reboot (CTRL+ALT+F1 may show the changes immediately)
+
+"
+exit 1
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+############################################################################################
+--gradient) ################################################################################
+############################################################################################
+if [ "$2" == "horizontal" ] || [ "$2" == "vertical" ]
+then
+direction=$2
+else
+echo "gradient direction is not provided"
+exit 1
+fi
+
+if [[ -z "$3" || -z "$4" ]]
+then
+echo "color/colors is/are not provided"
+exit 1
+fi
+
+if ! [[ $3 =~ ^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$ ]] || ! [[ $4 =~ ^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$ ]]
+then
+echo "provided color/colors is/are not a valid 'HEX Color Code'
+see help with below command
+./arch-gdm-set-background --help"
+exit 1
+fi	
+
+ROUTINE_CHECK
+EXTRACT
+cd theme
+mv gnome-shell.css original.css
+echo '@import url("resource:///org/gnome/shell/theme/original.css");
+#lockDialogGroup {
+background-gradient-direction: '$direction';
+background-gradient-start: '$3';
+background-gradient-end: '$4'; }' > gnome-shell.css
+cd /tmp
+CREATE_XML
+cd theme
+glib-compile-resources custom-gdm-background.gresource.xml
+mv custom-gdm-background.gresource $source
+echo "
+seems 'background change is successful'
+Changes will be effective after a Reboot (CTRL+ALT+F1 may show the changes immediately)
+
+"
+exit 1
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+############################################################################################
+*) #########################################################################################
+############################################################################################
+echo " use the options --image | --color | --gradient | --help | --reset"
+exit 1
+;;
+############################################################################################
+############################################################################################
+############################################################################################
+
+esac #######################################################################################
+############################################################################################
+
+exit
