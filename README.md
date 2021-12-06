@@ -39,4 +39,7 @@ If anytihng wrong after running this script.. reinstall the package "gnome-shell
 
 ![gradHorz](https://user-images.githubusercontent.com/40719899/144897100-c0cd995d-2ad9-48b5-b06f-fb9baac12312.png)
 
+![gradVer](https://user-images.githubusercontent.com/40719899/144897742-7262068f-6ee1-4b02-942d-b3f65a8edd95.png)
+
+
 
