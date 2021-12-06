@@ -29,11 +29,14 @@ Example Commands:
 5. `sudo ./arch-gdm-set-background --reset`
 6. `./arch-gdm-set-background --help`
 
-If anytihng wrong after running this script.. reinstall the package "gnome-shell" with below command
+If anytihng wrong after running this script.. reinstall the package "gnome-shell" with below command  
 `sudo pacman -S gnome-shell`.
 
 
 ![GDM](https://user-images.githubusercontent.com/40719899/144896392-75e0c65f-c174-47df-936b-0b3eb79bc9c9.png)
 
 ![color](https://user-images.githubusercontent.com/40719899/144896795-df4a63f2-4080-45f1-a05f-82efe5c0d084.png)
+
+![gradHorz](https://user-images.githubusercontent.com/40719899/144897100-c0cd995d-2ad9-48b5-b06f-fb9baac12312.png)
+
 
