@@ -34,3 +34,6 @@ If anytihng wrong after running this script.. reinstall the package "gnome-shell
 
 
 ![GDM](https://user-images.githubusercontent.com/40719899/144896392-75e0c65f-c174-47df-936b-0b3eb79bc9c9.png)
+
+![color](https://user-images.githubusercontent.com/40719899/144896795-df4a63f2-4080-45f1-a05f-82efe5c0d084.png)
+
