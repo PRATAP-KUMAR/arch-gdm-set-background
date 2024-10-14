@@ -1,3 +1,5 @@
+Update: For latest versions of GNOME 45 and above use this repo: https://github.com/PRATAP-KUMAR/gdm-extension
+
 # arch-gdm-set-background
 Set GDM Background for Arch Linux
 
